@@ -14,9 +14,3 @@ export interface IUserDoc extends IUser, Document {
 export interface IUserModel extends Model<IUserDoc> {
   isEmailTaken(email: string): Promise<boolean>;
 }
-
-export type UpdateUserBody = Partial<IUser>;
-
-export type NewRegisteredUser = Omit<IUser, "role" | "isEmailVerified">;
-
-export type NewCreatedUser = Omit<IUser, "isEmailVerified">;

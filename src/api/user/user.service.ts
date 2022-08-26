@@ -1,16 +1,9 @@
 import mongoose from "mongoose";
 import { HttpException } from "exceptions";
 import User from "./user.model";
-import {
-  NewCreatedUser,
-  UpdateUserBody,
-  IUserDoc,
-  NewRegisteredUser,
-} from "./user.interface";
+import { IUserDoc, IUser } from "./user.interface";
 
-export const createUser = async (
-  userBody: NewCreatedUser
-): Promise<IUserDoc> => {
+export const createUser = async (userBody: IUser): Promise<IUserDoc> => {
   if (await User.isEmailTaken(userBody.email)) {
     throw new HttpException(400, "Email already taken");
   }
@@ -18,7 +11,7 @@ export const createUser = async (
 };
 
 export const registerUser = async (
-  userBody: NewRegisteredUser
+  userBody: Omit<IUser, "role">
 ): Promise<IUserDoc> => {
   if (await User.isEmailTaken(userBody.email)) {
     throw new HttpException(400, "Email already taken");
@@ -43,7 +36,7 @@ export const getUserByEmail = async (
 
 export const updateUserById = async (
   userId: mongoose.Types.ObjectId,
-  updateBody: UpdateUserBody
+  updateBody: Partial<IUser>
 ): Promise<IUserDoc | null> => {
   const user = await getUserById(userId);
   if (!user) {
