@@ -1,21 +1,27 @@
-import "dotenv/config";
+import mongoose from "mongoose";
+import app from "./app";
 
-import path from "path";
-import express from "express";
-import bodyParser from "body-parser";
+const APP_PORT = process.env.APP_PORT ?? 8080;
+const MONGODB_URI = process.env.MONGODB_URI as string;
 
-import { ErrorHandlerMiddleware } from "middlewares";
-import api from "./api";
+mongoose.connect(MONGODB_URI);
 
-export const APP_PORT = process.env.APP_PORT ?? 8080;
+mongoose.connection.on("connected", () => {
+  console.info("Connected to MongoDB");
+  app.listen(APP_PORT, () => {
+    console.log(`Server is running at http://localhost:${APP_PORT}`);
+  });
+});
 
-const app = express();
+mongoose.connection.on("error", (err) => {
+  console.error("Unable to connect MongoDB", err);
+});
 
-app.use(express.static(path.join(__dirname + "/../")));
-app.use(bodyParser.json());
-app.use("/api", api);
-app.use(ErrorHandlerMiddleware);
+mongoose.connection.on("reconnected", () => {
+  console.info("Reconnected to MongoDB");
+});
 
-app.listen(APP_PORT, () => {
-  console.log(`Server is running at http://localhost:${APP_PORT}`);
+mongoose.connection.on("disconnected", async () => {
+  console.error(`MongoDB disconnected.`);
+  process.exit(1);
 });
