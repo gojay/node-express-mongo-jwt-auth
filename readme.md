@@ -1,6 +1,6 @@
 ### Todo
 
-1. install mongoose
+1. install mongoose [DONE]
 2. create refresh_token schema
 3. create refresh_token on sign then save into refresh_token schema
 4. create refresh token service
@@ -14,8 +14,8 @@
   - else
     - throw 401: resign
 
-5. create user schema
-6. create api crud user
-7. create api crud todo
+5. create user schema [DONE]
+6. create api crud user [DONE]
+7. create api crud product
 8. add middleware jwt
 9. add middleware jwt roles
