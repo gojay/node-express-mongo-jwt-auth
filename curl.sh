@@ -1,3 +1,5 @@
+# CURL symmetric
+
 curl -X POST \
   'http://localhost:3000/api/symmetric/sign' \
   -H 'Content-Type: application/json' \
@@ -12,6 +14,8 @@ curl -X POST \
   -d '{
     "token": "eyJhbGciOiJIUzI1NiIsImtpZCI6InNpbTEifQ.eyJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJpc3MiOiJMb2NhbGhvc3QiLCJzdWIiOjEsInJvbGVzIjpbImEiLCJiIl0sImV4cCI6MTY2MTQ0MzYyNX0._jhIZYEpJ6tFSFKKK61s1EchNkqttB1Az32ZvoMGP-o"
   }'
+
+# CURL asymmetric
 
 curl -X POST \
   'http://localhost:3000/api/asymmetric/add' \
@@ -39,10 +43,10 @@ curl -X POST \
     "token": "eyJ0eXAiOiJqd3QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImFzeW0xIn0.eyJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJpc3MiOiJMb2NhbGhvc3QiLCJzdWIiOjEsInJvbGVzIjpbImEiLCJiIl0sImV4cCI6MTY2MTQ3NTAxNH0.iAstAaf6jfUNp_m2fPyjfrXzc3fqu1P55dWfKTTf-VkBknw-G0VvFBSvzKwd4URGOsmFrKnrGMLthY5ap_iGx_fRjMjLdcTpnvYqMZrGBTsXQuFT5yibDbvKIXFiBalARXI1VB4-O9amqfEI6sh7jB4SYoWzfVagUPZmNTDmtRjPpGJB6miP2S8Tzg8weRHUtSBhhOCepVTi1yizN5o2x-aQmJrMhC6CMqqGYf_xxyZDI4CBDoyfK198WbDb-ayfDlUAwTfD73xoyPH0RvPGREwyfpB-nItyy9JOynwlgjMzuxXypqxpxJMjf1U5PMwzYl6zrDjsC6GvPFKVguQGVg"
   }'
 
+# CURL users
+
 curl -v GET 'http://localhost:3000/api/users' | json_pp
 curl -v GET 'http://localhost:3000/api/users/6308f1557a454f011ae98897' | json_pp
-curl -v GET 'http://localhost:3000/api/users/6308f4b8327b5e226b5ea793' | json_pp
-curl -v -X DELETE 'http://localhost:3000/api/users/6308f4b8327b5e226b5ea793'
 
 curl -v -X POST \
   'http://localhost:3000/api/users' \
@@ -87,3 +91,44 @@ curl -v -X PATCH \
   -d '{
     "email": "staff2@example.com"
   }'  | json_pp
+
+curl -v -X DELETE 'http://localhost:3000/api/users/6308f4b8327b5e226b5ea793'
+
+# CURL products
+
+curl -v GET 'http://localhost:3000/api/products' | json_pp
+curl -v GET 'http://localhost:3000/api/products/630aa4f0e5212ee8c51ac923' | json_pp
+curl -v GET 'http://localhost:3000/api/products/630aa536e5212ee8c51ac92b' | json_pp
+
+curl -v -X POST \
+  'http://localhost:3000/api/products' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "Product1",
+    "sku": "sku001",
+    "price": 500000
+  }'  | json_pp
+curl -v -X POST \
+  'http://localhost:3000/api/products' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "Product2",
+    "sku": "sku001",
+    "price": 100000
+  }'  | json_pp
+curl -v -X POST \
+  'http://localhost:3000/api/products' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "Product2",
+    "sku": "sku002",
+    "price": 100000
+  }'  | json_pp
+curl -v -X PATCH \
+  'http://localhost:3000/api/products/630aa536e5212ee8c51ac92b' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "price": "550000"
+  }'  | json_pp
+
+curl -v -X DELETE 'http://localhost:3000/api/products/630aa536e5212ee8c51ac92b'
