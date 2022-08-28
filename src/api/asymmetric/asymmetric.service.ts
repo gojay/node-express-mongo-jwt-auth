@@ -1,34 +1,20 @@
-import { JWK, JWS } from "node-jose";
 import fs from "fs";
+import { JWK, JWS } from "node-jose";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { HttpException, UnauthorizeError } from "exceptions";
-import {
-  getJwtExp,
-  getJwks,
-  getJwkFile,
-  getJwkContents,
-  getJwksUrl,
-} from "utils";
-import { JWKType, JWT_TYPE } from "types";
+import { getJwtExp, getJwkFile, getJwkContents } from "utils";
+import { JWKKeys, JWKType, JWT_TYPE } from "types";
 
 const jwkPublicKey = getJwkFile(JWKType.ASYMMETRIC_PUBLIC);
 const jwkPrivateKey = getJwkFile(JWKType.ASYMMETRIC_PRIVATE);
 
-export const add = async (
-  kid: string
-): Promise<{
-  private: string;
-  public: string;
-}> => {
+export const add = async (kid: string): Promise<void> => {
   const ks = getJwkContents(JWKType.ASYMMETRIC_PRIVATE);
   const keyStore = ks ? await JWK.asKeyStore(ks) : JWK.createKeyStore();
 
   const jwkKey = keyStore.get(kid);
   if (jwkKey) {
-    return {
-      private: getJwksUrl(JWKType.ASYMMETRIC_PRIVATE),
-      public: getJwksUrl(JWKType.ASYMMETRIC_PUBLIC),
-    };
+    return;
   }
 
   await keyStore.generate("RSA", 2048, {
@@ -37,33 +23,32 @@ export const add = async (
     kid,
   });
 
+  const publicKeys = keyStore.toJSON() as JWKKeys;
+  publicKeys.keys = publicKeys.keys.reverse();
+  const privateKeys = keyStore.toJSON(true) as JWKKeys;
+  privateKeys.keys = privateKeys.keys.reverse();
+
   fs.writeFileSync(
     getJwkFile(JWKType.ASYMMETRIC_PUBLIC),
-    JSON.stringify(keyStore.toJSON(), null, 1)
+    JSON.stringify(publicKeys, null, 1)
   );
   fs.writeFileSync(
     getJwkFile(JWKType.ASYMMETRIC_PRIVATE),
-    JSON.stringify(keyStore.toJSON(true), null, 1)
+    JSON.stringify(privateKeys, null, 1)
   );
 
-  return {
-    private: getJwksUrl(JWKType.ASYMMETRIC_PRIVATE),
-    public: getJwksUrl(JWKType.ASYMMETRIC_PUBLIC),
-  };
+  return;
 };
 
-export const remove = async (): Promise<{
-  private: string;
-  public: string;
-} | null> => {
+export const remove = async (): Promise<void> => {
   const f = getJwkContents(JWKType.ASYMMETRIC_PRIVATE);
-  if (!f) return null;
+  if (!f) return;
 
   const ks = JSON.parse(f);
   if (ks.keys.length === 1) {
     fs.unlinkSync(jwkPrivateKey);
     fs.unlinkSync(jwkPublicKey);
-    return null;
+    return;
   }
 
   ks.keys.pop();
@@ -76,10 +61,7 @@ export const remove = async (): Promise<{
     JSON.stringify(keyStore.toJSON(true), null, 1)
   );
 
-  return {
-    private: getJwksUrl(JWKType.ASYMMETRIC_PRIVATE),
-    public: getJwksUrl(JWKType.ASYMMETRIC_PUBLIC),
-  };
+  return;
 };
 
 export const sign = async (
@@ -87,10 +69,11 @@ export const sign = async (
   userRoles: string[]
 ): Promise<string> => {
   try {
-    const keyStore = await getJwks(JWKType.ASYMMETRIC_PRIVATE);
-    if (!keyStore) {
-      throw new UnauthorizeError("jwk_keys_not_exists");
+    const ks = getJwkContents(JWKType.ASYMMETRIC_PRIVATE);
+    if (!ks) {
+      throw new HttpException(400, "jwk_keys_not_exists");
     }
+    const keyStore = await JWK.asKeyStore(ks);
 
     const [key] = keyStore.all({ use: "sig" });
     const opt = { compact: true, jwk: key, fields: { typ: "jwt" } };
@@ -130,10 +113,11 @@ export const verify = async (token: string): Promise<JwtPayload> => {
     throw new UnauthorizeError("missing_kid");
   }
 
-  const keyStore = await getJwks(JWKType.ASYMMETRIC_PRIVATE);
-  if (!keyStore) {
+  const ks = getJwkContents(JWKType.ASYMMETRIC_PRIVATE);
+  if (!ks) {
     throw new UnauthorizeError("jwk_keys_not_exists");
   }
+  const keyStore = await JWK.asKeyStore(ks);
   const jwkKey = keyStore.get(header.kid);
   if (!jwkKey) {
     throw new UnauthorizeError("jwk_key_not_found");

@@ -49,14 +49,22 @@ export const remove = async (kid: string): Promise<void> => {
 
 export const sign = async (
   userId: number,
-  userRoles: string[]
+  userRoles: string[],
+  kid?: string
 ): Promise<string> => {
   const keyStore = await getJwks(JWKType.SYMMETRIC);
   if (!keyStore) {
     throw new UnauthorizeError("jwk keys doesn't exists");
   }
 
-  const jwkKey = keyStore.get("sim1");
+  let jwkKey;
+  if (kid) {
+    jwkKey = keyStore.get("sim1");
+  } else {
+    const jwkKeys = keyStore.all();
+    jwkKey = jwkKeys[0];
+  }
+
   if (!jwkKey) {
     throw new UnauthorizeError("jwk key not found");
   }

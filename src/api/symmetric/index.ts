@@ -19,16 +19,13 @@ router.post("/sign", (req: Request, res: Response, next: NextFunction) => {
 });
 
 router.post("/verify", (req: Request, res: Response, next: NextFunction) => {
-  const token = req.body.token;
-  console.log("req.bidy", req.body);
-  verify(token)
+  verify(req.body.token)
     .then((result) => res.json(result))
     .catch(next);
 });
 
 router.delete("/:kid", (req: Request, res: Response, next: NextFunction) => {
-  const kid = req.params.kid;
-  remove(kid)
+  remove(req.params.kid)
     .then(() => res.status(200).end())
     .catch(next);
 });

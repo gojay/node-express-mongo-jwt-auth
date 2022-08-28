@@ -9,8 +9,8 @@ import api from "./api";
 
 const app = express();
 
-app.use(express.static(path.join(__dirname + "/../")));
 app.use(bodyParser.json());
+app.use("/.well-known", express.static(path.join(__dirname, "../jwk/public")));
 app.use("/api", api);
 app.use(ErrorHandlerMiddleware);
 

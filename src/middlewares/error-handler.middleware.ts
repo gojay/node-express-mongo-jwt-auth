@@ -12,7 +12,7 @@ export const ErrorHandlerMiddleware = (
       return res
         .status((error as HttpException).status)
         .json({ message: error.message });
-    case "UnauthorizeError":
+    case "UnauthorizedError":
       return res.status(401).json({ message: error.message });
     default:
       return res.status(500).json({ message: error.message });

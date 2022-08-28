@@ -1,6 +1,11 @@
 # CURL symmetric
 
 curl -X POST \
+  'http://localhost:3000/api/symmetric/add' \
+  -H 'Content-Type: application/json' \
+  -d '{"kid": "sym1"}'
+
+curl -v -X POST \
   'http://localhost:3000/api/symmetric/sign' \
   -H 'Content-Type: application/json' \
   -d '{
@@ -8,40 +13,44 @@ curl -X POST \
   "roles": ["a","b"]
 }'
 
-curl -X POST \
+curl -v -X POST \
   'http://localhost:3000/api/symmetric/verify' \
   -H 'Content-Type: application/json' \
   -d '{
-    "token": "eyJhbGciOiJIUzI1NiIsImtpZCI6InNpbTEifQ.eyJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJpc3MiOiJMb2NhbGhvc3QiLCJzdWIiOjEsInJvbGVzIjpbImEiLCJiIl0sImV4cCI6MTY2MTQ0MzYyNX0._jhIZYEpJ6tFSFKKK61s1EchNkqttB1Az32ZvoMGP-o"
-  }'
+    "token": "eyJhbGciOiJIUzI1NiIsImtpZCI6InN5bTEifQ.eyJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJpc3MiOiJMb2NhbGhvc3QiLCJzdWIiOjEsInJvbGVzIjpbImEiLCJiIl0sImV4cCI6MTY2MjcyNTcxMn0.7p0EHwOdLt4jZ4gH360k5qOYv418HxdU8ibdupibbPI"
+  }' | json_pp
 
 # CURL asymmetric
 
-curl -X POST \
+curl -v -X POST \
   'http://localhost:3000/api/asymmetric/add' \
   -H 'Content-Type: application/json' \
   -d '{"kid":"asym1"}'
-curl -X POST \
+curl -v -X POST \
+  'http://localhost:3000/api/asymmetric/add' \
+  -H 'Content-Type: application/json' \
+  -d '{"kid":"asym2"}'
+curl -v -X POST \
   'http://localhost:3000/api/asymmetric/sign' \
   -H 'Content-Type: application/json' \
   -d '{
-  "id": 1,
+  "id": 2,
   "roles": ["a","b"]
-}'
+}' | json_pp
 
-curl -X POST \
+curl -v -X POST \
   'http://localhost:3000/api/asymmetric/verify' \
   -H 'Content-Type: application/json' \
   -d '{
-    "token": "eyJ0eXAiOiJqd3QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImFzeW0xIn0.eyJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJpc3MiOiJMb2NhbGhvc3QiLCJzdWIiOjEsInJvbGVzIjpbImEiLCJiIl0sImV4cCI6MTY2MTQ3MTE1NX0.ZB2T9kNeahacO-_BBlyrv_VqxNTZwF5UyJdw6_VwZhhVRNsV68YsyaZu8ow51nyjUwy5SJSqnIoitABWHEUDiMwLZ9PeB2fSOhvV96v2zmsLQ1BlRseKN5IwP3Z3VKIK3yjupEz4H5oA4dogsShVFN33FE2s8AMVIZVKQNYhr8PSl5BDKucFX6WnFTOmsQKOs2JqM_bZMnLTb_OTYO6UgPjGbyK2JzYSqC8d21PfkQjnv5StUFsx7_H_84sRm2s3R-9Cc39zMc43lpeoaXTh8BoIdv1N8UE8HIdDtq4tutZMOtEVn3RX4THAE1H0lHVv8Gk4ZCaOauu6keNes2KA3g"
-  }'
-
-curl -X POST \
+    "token": "eyJ0eXAiOiJqd3QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImFzeW0xIn0.eyJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJpc3MiOiJMb2NhbGhvc3QiLCJzdWIiOjEsInJvbGVzIjpbImEiLCJiIl0sImV4cCI6MTY2MjcyNjg1Nn0.rhtnfT1EWBHmeOjlg_9Ne8sVTAtiVk-xXFDWpa6frfx9Ve79cc6FTBaJn7FqHW2zMApa0cesYSLMw3Rs97XY9phzLsa4jEr_ITJ14MlkiSM3-YlWEhW0Do6SjjAPh7cnAh6keuSNBg0E_55XbGJCAaYlUA7Dt05aWnugwRBl5e-drDt32sZUHqKKOFv6_A0nRaNeT9f2DM41b-1AVkCUPJVfw0he-Oo7WlDQWcDEmWpPswP-QofifRpKs0uisKEAil85814MjCqU86dmdsWLaN04DFDamL7aP_SokS7-yHBmwjaRPAt5ZMZ93c6Jfrl7yKmy_ee0uQb4I8GOO2ZjjA"
+  }' | json_pp
+curl -v -X POST \
   'http://localhost:3000/api/asymmetric/verify' \
   -H 'Content-Type: application/json' \
   -d '{
-    "token": "eyJ0eXAiOiJqd3QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImFzeW0xIn0.eyJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJpc3MiOiJMb2NhbGhvc3QiLCJzdWIiOjEsInJvbGVzIjpbImEiLCJiIl0sImV4cCI6MTY2MTQ3NTAxNH0.iAstAaf6jfUNp_m2fPyjfrXzc3fqu1P55dWfKTTf-VkBknw-G0VvFBSvzKwd4URGOsmFrKnrGMLthY5ap_iGx_fRjMjLdcTpnvYqMZrGBTsXQuFT5yibDbvKIXFiBalARXI1VB4-O9amqfEI6sh7jB4SYoWzfVagUPZmNTDmtRjPpGJB6miP2S8Tzg8weRHUtSBhhOCepVTi1yizN5o2x-aQmJrMhC6CMqqGYf_xxyZDI4CBDoyfK198WbDb-ayfDlUAwTfD73xoyPH0RvPGREwyfpB-nItyy9JOynwlgjMzuxXypqxpxJMjf1U5PMwzYl6zrDjsC6GvPFKVguQGVg"
-  }'
+    "token": "eyJ0eXAiOiJqd3QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImFzeW0yIn0.eyJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJpc3MiOiJMb2NhbGhvc3QiLCJzdWIiOjIsInJvbGVzIjpbImEiLCJiIl0sImV4cCI6MTY2MjcyNjkwNH0.tF8zaKQernQIMQcHuInS_LKNDSZyO-ovnHaXfkTGVjFLPiZOOF4zEGdXh5BF5GvRHrdFakn14OH1nlR-HgedoIp89ugJjUk_5POCq_w3h_cO_DUe4iZGQ1QyILtebnl_NtHLP3np_vpt8OJBsWM78vTe70y7TRtTPk0E2fA0UrlRD7w2eP9LALqxEs7gXhw5TVuhps8_sNlhvWhn9UHv00VCq1pW5vlrcMERQ2DTXU7kqOlDtG0CApV7csy74ZujrFdRL7xzpIIEVYNLRRBh12GOCIX56nWu-tHGbcdylQ20NP82ymqsVUP1aRg5pm1V69mjiHD1KCHV8RrbLeQHgA"
+  }' | json_pp
+curl -X DELETE 'http://localhost:3000/api/asymmetric'
 
 # CURL users
 
