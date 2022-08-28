@@ -1,0 +1,62 @@
+import {
+  ExtractJwt,
+  Strategy as JwtStrategy,
+  StrategyOptions,
+  VerifiedCallback,
+} from "passport-jwt";
+import { ExpressJwtOptions, passportJwtSecret } from "jwks-rsa";
+import { JwtPayload } from "jsonwebtoken";
+import { getJwksUrl } from "utils";
+import { JWKType } from "types";
+import User from "api/user/user.model";
+
+const jwtVerify = async (payload: JwtPayload, done: VerifiedCallback) => {
+  try {
+    const user = await User.findById(payload.sub);
+    if (!user) throw new Error("User not found");
+    done(null, user);
+  } catch (error) {
+    done(error, false);
+  }
+};
+
+export const jwtStrategy = (): JwtStrategy => {
+  const jwtOptions: Partial<ExpressJwtOptions> = {
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+  };
+  const strategyOptions: StrategyOptions = {
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    audience: process.env.JWT_AUDIENCE,
+    issuer: process.env.JWT_ISSUER,
+  };
+  if (process.env.JWK_TYPE === "symmetric") {
+    console.log("jwksuri", getJwksUrl(JWKType.SYMMETRIC));
+    return new JwtStrategy(
+      {
+        ...strategyOptions,
+        algorithms: ["HS256"],
+        secretOrKeyProvider: passportJwtSecret({
+          ...jwtOptions,
+          jwksUri: getJwksUrl(JWKType.SYMMETRIC),
+        }),
+      },
+      jwtVerify
+    );
+  }
+
+  return new JwtStrategy(
+    {
+      ...strategyOptions,
+      algorithms: ["RS256"],
+      secretOrKeyProvider: passportJwtSecret({
+        ...jwtOptions,
+        jwksUri: getJwksUrl(JWKType.ASYMMETRIC_PUBLIC),
+      }),
+    },
+    jwtVerify
+  );
+};
+
+export default jwtStrategy;

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
-import { HttpException } from "exceptions";
+import { HttpError } from "exceptions";
 import * as productService from "./product.service";
 
 export const createProduct = async (
@@ -38,8 +38,7 @@ export const getProduct = async (
     const product = await productService.getProductById(
       new mongoose.Types.ObjectId(req.params["productId"])
     );
-    console.log("product", product);
-    if (!product) throw new HttpException(404, "Product not found");
+    if (!product) throw new HttpError(404, "Product not found");
     res.json(product);
   } catch (error) {
     next(error);
@@ -56,7 +55,7 @@ export const updateProduct = async (
       new mongoose.Types.ObjectId(req.params["productId"]),
       req.body
     );
-    if (!product) throw new HttpException(404, "Product not found");
+    if (!product) throw new HttpError(404, "Product not found");
     res.json(product);
   } catch (error) {
     next(error);

@@ -1,10 +1,11 @@
-import { Document, Model } from "mongoose";
+import { Document, Model, Schema } from "mongoose";
+import { IResourceDoc } from "resource/resource.interface";
 
 export interface IUser {
   name: string;
   email: string;
   password: string;
-  role: string;
+  role: Schema.Types.ObjectId;
 }
 
 export interface IUserDoc extends IUser, Document {
@@ -12,5 +13,6 @@ export interface IUserDoc extends IUser, Document {
 }
 
 export interface IUserModel extends Model<IUserDoc> {
-  isEmailTaken(email: string): Promise<boolean>;
+  IsEmailTaken(email: string): Promise<boolean>;
+  GetScopes(resouces: IResourceDoc[]): string[];
 }

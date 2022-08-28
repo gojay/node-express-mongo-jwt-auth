@@ -1,4 +1,5 @@
 import { Router, Request, Response, NextFunction } from "express";
+import { TokenType } from "types";
 
 import { add, remove, sign, verify } from "./symmetric.service";
 
@@ -12,8 +13,8 @@ router.post("/add", (req: Request, res: Response, next: NextFunction) => {
 });
 
 router.post("/sign", (req: Request, res: Response, next: NextFunction) => {
-  const { id, roles } = req.body;
-  sign(id, roles)
+  const { id, role } = req.body;
+  sign(TokenType.ACCESS_TOKEN, { sub: id.toString(), role: role })
     .then((token) => res.json({ token }))
     .catch(next);
 });

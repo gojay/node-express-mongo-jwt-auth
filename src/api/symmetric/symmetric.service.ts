@@ -1,9 +1,9 @@
 import { JWK, JWS, util as joseUtil } from "node-jose";
 import fs from "fs";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { HttpException, UnauthorizeError } from "exceptions";
-import { JWKKeys, JWKType, JWT_TYPE } from "types";
-import { getJwtExp, getJwks, getJwkContents, getJwkFile } from "utils";
+import { HttpError, UnauthorizeError } from "exceptions";
+import { JWKKeys, JWKType, TokenType } from "types";
+import { getTokenExpUnix, fetchJwks, getJwkContents, getJwkFile } from "utils";
 
 export const add = async (kid: string): Promise<JWKKeys> => {
   const ks = getJwkContents(JWKType.SYMMETRIC);
@@ -29,14 +29,14 @@ export const add = async (kid: string): Promise<JWKKeys> => {
 };
 
 export const remove = async (kid: string): Promise<void> => {
-  const keyStore = await getJwks(JWKType.SYMMETRIC);
+  const keyStore = await fetchJwks(JWKType.SYMMETRIC);
   if (!keyStore) {
-    throw new HttpException(404, "jwk keys does not exists");
+    throw new HttpError(404, "jwk keys does not exists");
   }
 
   const jwkKey = keyStore.get(kid);
   if (!jwkKey) {
-    throw new HttpException(404, "jwk key not found");
+    throw new HttpError(404, "jwk key not found");
   }
 
   keyStore.remove(jwkKey);
@@ -48,11 +48,11 @@ export const remove = async (kid: string): Promise<void> => {
 };
 
 export const sign = async (
-  userId: number,
-  userRoles: string[],
+  type: TokenType,
+  payload: JwtPayload,
   kid?: string
 ): Promise<string> => {
-  const keyStore = await getJwks(JWKType.SYMMETRIC);
+  const keyStore = await fetchJwks(JWKType.SYMMETRIC);
   if (!keyStore) {
     throw new UnauthorizeError("jwk keys doesn't exists");
   }
@@ -69,15 +69,22 @@ export const sign = async (
     throw new UnauthorizeError("jwk key not found");
   }
 
+  return createToken(type, jwkKey, payload);
+};
+
+export const createToken = async (
+  type: TokenType,
+  jwkKey: JWK.Key,
+  payload: JwtPayload
+): Promise<string> => {
   const opt = { compact: true };
-  const payload = JSON.stringify({
+  const input = JSON.stringify({
+    ...payload,
     aud: process.env.JWT_AUDIENCE,
     iss: process.env.JWT_ISSUER,
-    sub: userId,
-    roles: userRoles,
-    exp: getJwtExp(JWT_TYPE.ACCESS_TOKEN),
+    exp: getTokenExpUnix(type),
   });
-  const signResult = await JWS.createSign(opt, jwkKey).update(payload).final();
+  const signResult = await JWS.createSign(opt, jwkKey).update(input).final();
   return signResult.toString();
 };
 
@@ -103,7 +110,7 @@ export const verify = async (token: string): Promise<JwtPayload> => {
     throw new UnauthorizeError("missing_kid");
   }
 
-  const keyStore = await getJwks(JWKType.SYMMETRIC);
+  const keyStore = await fetchJwks(JWKType.SYMMETRIC);
   if (!keyStore) {
     throw new UnauthorizeError("jwk_keys_not_exists");
   }

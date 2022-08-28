@@ -3,7 +3,7 @@ import validator from "validator";
 import bcrypt from "bcryptjs";
 
 import { IUserDoc, IUserModel } from "./user.interface";
-import { UserRole } from "./user.type";
+import { IResourceDoc } from "resource/resource.interface";
 
 const userSchema = new mongoose.Schema<IUserDoc, IUserModel>(
   {
@@ -32,9 +32,9 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>(
       select: false,
     },
     role: {
-      type: String,
-      enum: UserRole,
-      default: "user",
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Role",
+      required: true,
     },
   },
   {
@@ -48,12 +48,19 @@ userSchema.set("toJSON", {
   },
 });
 userSchema.static(
-  "isEmailTaken",
+  "IsEmailTaken",
   async function (email: string): Promise<boolean> {
     const user = await this.findOne({ email });
     return !!user;
   }
 );
+userSchema.static("GetScopes", (resouces: IResourceDoc[]): string[] => {
+  return resouces.reduce<string[]>((scopes, resource: IResourceDoc) => {
+    const resourceScopes = resource.scopes;
+    scopes.push(...resourceScopes);
+    return scopes;
+  }, []);
+});
 
 userSchema.method(
   "isPasswordMatch",

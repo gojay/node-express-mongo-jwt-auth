@@ -10,14 +10,14 @@ curl -v -X POST \
   -H 'Content-Type: application/json' \
   -d '{
   "id": 1,
-  "roles": ["a","b"]
+  "role": "admin"
 }'
 
 curl -v -X POST \
   'http://localhost:3000/api/symmetric/verify' \
   -H 'Content-Type: application/json' \
   -d '{
-    "token": "eyJhbGciOiJIUzI1NiIsImtpZCI6InN5bTEifQ.eyJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJpc3MiOiJMb2NhbGhvc3QiLCJzdWIiOjEsInJvbGVzIjpbImEiLCJiIl0sImV4cCI6MTY2MjcyNTcxMn0.7p0EHwOdLt4jZ4gH360k5qOYv418HxdU8ibdupibbPI"
+    "token": "eyJhbGciOiJIUzI1NiIsImtpZCI6InN5bTEifQ.eyJzdWIiOiIxIiwicm9sZSI6ImFkbWluIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDozMDAwIiwiaXNzIjoiTG9jYWxob3N0IiwiZXhwIjoxNjYxNjk2ODk1fQ.m4AE0prk_iV6MEbDMj5j2oL_BfhAI58b_b--cmCSJBU"
   }' | json_pp
 
 # CURL asymmetric
@@ -35,7 +35,7 @@ curl -v -X POST \
   -H 'Content-Type: application/json' \
   -d '{
   "id": 2,
-  "roles": ["a","b"]
+  "role": "admin"
 }' | json_pp
 
 curl -v -X POST \
@@ -52,9 +52,56 @@ curl -v -X POST \
   }' | json_pp
 curl -X DELETE 'http://localhost:3000/api/asymmetric'
 
+# CURL login
+
+curl -v -X POST \
+  'http://localhost:3000/auth/login' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "email": "john.doe@example.com",
+    "password": "12345678"
+  }' | json_pp
+# {
+#    "access_token" : "eyJhbGciOiJIUzI1NiIsImtpZCI6InN5bTEifQ.eyJzdWIiOiI2MzBiOTljOWM4NjBmM2JkZDhjNGQ4N2YiLCJlbWFpbCI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwicm9sZSI6IlN1cGVyIEFkbWluIiwic2NvcGVzIjpbImNyZWF0ZTpwcm9kdWN0cyIsInJlYWQ6cHJvZHVjdHMiLCJ1cGRhdGU6cHJvZHVjdHMiLCJkZWxldGU6cHJvZHVjdHMiLCJjcmVhdGU6dXNlcnMiLCJyZWFkOnVzZXJzIiwidXBkYXRlOnVzZXJzIiwiZGVsZXRlOnVzZXJzIl0sImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCIsImlzcyI6IkxvY2FsaG9zdCIsImV4cCI6MTY2MTcwNjEzNn0.r8I1xyUpPhofMogl5s53xweuF7etDMScSzCzqIO0iUI",
+#    "refresh_token" : "eyJhbGciOiJIUzI1NiIsImtpZCI6InN5bTEifQ.eyJzdWIiOiI2MzBiOTljOWM4NjBmM2JkZDhjNGQ4N2YiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJpc3MiOiJMb2NhbGhvc3QiLCJleHAiOjE2NjE3MTE1MzZ9.Cg2It7Yiy-G0gioZM0wa6poC_yGI3aVML4Hy25gER5g"
+# }
+curl -v -X POST \
+  'http://localhost:3000/auth/login' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "email": "john.doe@example.com",
+    "password": "12345678"
+  }' | json_pp
+# {
+#    "access_token" : "eyJhbGciOiJIUzI1NiIsImtpZCI6InN5bTEifQ.eyJzdWIiOiI2MzBiOTljOWM4NjBmM2JkZDhjNGQ4N2YiLCJlbWFpbCI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwicm9sZSI6IlN1cGVyIEFkbWluIiwic2NvcGVzIjpbImNyZWF0ZTpwcm9kdWN0cyIsInJlYWQ6cHJvZHVjdHMiLCJ1cGRhdGU6cHJvZHVjdHMiLCJkZWxldGU6cHJvZHVjdHMiLCJjcmVhdGU6dXNlcnMiLCJyZWFkOnVzZXJzIiwidXBkYXRlOnVzZXJzIiwiZGVsZXRlOnVzZXJzIl0sImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCIsImlzcyI6IkxvY2FsaG9zdCIsImV4cCI6MTY2MTcwNjIwN30.quXNJu7venCgL5PMhw4bk_l4qJBBbKasad2MlTg6eg4",
+#    "refresh_token" : "eyJhbGciOiJIUzI1NiIsImtpZCI6InN5bTEifQ.eyJzdWIiOiI2MzBiOTljOWM4NjBmM2JkZDhjNGQ4N2YiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJpc3MiOiJMb2NhbGhvc3QiLCJleHAiOjE2NjE3MTE2MDd9.muYu_MRd-XZ8CMFkt96pksuiC4dy3dV4z6OXgK6YAAE"
+# }
+curl -v -X POST \
+  'http://localhost:3000/auth/login' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "email": "richard.roe@example.com",
+    "password": "12345678"
+  }' | json_pp
+# {
+#    "access_token" : "eyJhbGciOiJIUzI1NiIsImtpZCI6InN5bTEifQ.eyJzdWIiOiI2MzBiOTljOWM4NjBmM2JkZDhjNGQ4ODEiLCJlbWFpbCI6InJpY2hhcmQucm9lQGV4YW1wbGUuY29tIiwicm9sZSI6IlN0YWZmIiwic2NvcGVzIjpbImNyZWF0ZTpwcm9kdWN0cyIsInJlYWQ6cHJvZHVjdHMiXSwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDozMDAwIiwiaXNzIjoiTG9jYWxob3N0IiwiZXhwIjoxNjYxNzA2MjUzfQ.bJ_XIBnoV--zSJRKqV_4rH2nATk1AEdUE4GVeYqLphQ",
+#    "refresh_token" : "eyJhbGciOiJIUzI1NiIsImtpZCI6InN5bTEifQ.eyJzdWIiOiI2MzBiOTljOWM4NjBmM2JkZDhjNGQ4ODEiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJpc3MiOiJMb2NhbGhvc3QiLCJleHAiOjE2NjE3MTE2NTN9.Yq_89y2zVbhzF3-Qhv0J0JenZej6bdsCQah6AE_2NHk"
+# }
+
+curl -v -X POST \
+  'http://localhost:3000/auth/refresh-token' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsImtpZCI6InN5bTEifQ.eyJzdWIiOiI2MzA4ZjE1NTdhNDU0ZjAxMWFlOTg4OTciLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJpc3MiOiJMb2NhbGhvc3QiLCJleHAiOjE2NjE3MDE3OTN9.v3occiknJY1OfDqAb6ev51jt8NIxCgfxDo5u3z2SkwU"
+  }' | json_pp
+
 # CURL users
 
-curl -v GET 'http://localhost:3000/api/users' | json_pp
+curl -v -X POST 'http://localhost:3000/api/users/seed' | json_pp
+
+curl -v GET 'http://localhost:3000/api/users' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6InN5bTEifQ.eyJzdWIiOiI2MzBiOTljOWM4NjBmM2JkZDhjNGQ4ODEiLCJlbWFpbCI6InJpY2hhcmQucm9lQGV4YW1wbGUuY29tIiwicm9sZSI6IlN0YWZmIiwic2NvcGVzIjpbImNyZWF0ZTpwcm9kdWN0cyIsInJlYWQ6cHJvZHVjdHMiXSwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDozMDAwIiwiaXNzIjoiTG9jYWxob3N0IiwiZXhwIjoxNjYxNzA2MjUzfQ.bJ_XIBnoV--zSJRKqV_4rH2nATk1AEdUE4GVeYqLphQ'
 curl -v GET 'http://localhost:3000/api/users/6308f1557a454f011ae98897' | json_pp
 
 curl -v -X POST \

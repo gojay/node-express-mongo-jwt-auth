@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { HttpException } from "exceptions";
+import { HttpError } from "exceptions";
 
 export const ErrorHandlerMiddleware = (
   error: Error,
@@ -8,9 +8,9 @@ export const ErrorHandlerMiddleware = (
   next: NextFunction
 ): Response<any> => {
   switch (error.name) {
-    case "HttpException":
+    case "HttpError":
       return res
-        .status((error as HttpException).status)
+        .status((error as HttpError).status)
         .json({ message: error.message });
     case "UnauthorizedError":
       return res.status(401).json({ message: error.message });

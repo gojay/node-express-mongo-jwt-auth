@@ -2,7 +2,6 @@ import { JWK } from "node-jose";
 import axios from "axios";
 import fs from "fs";
 import { JWKType } from "types";
-import { HttpException } from "exceptions";
 
 export const getJwkContents = (type: JWKType): string | null => {
   try {
@@ -13,10 +12,11 @@ export const getJwkContents = (type: JWKType): string | null => {
   }
 };
 
-export const getJwks = async (type: JWKType): Promise<JWK.KeyStore | null> => {
+export const fetchJwks = async (
+  type: Exclude<JWKType, JWKType.ASYMMETRIC_PRIVATE>
+): Promise<JWK.KeyStore | null> => {
   try {
     const jwkURL = getJwksUrl(type);
-    console.log("jwkURL", jwkURL);
     const jwkResponse = await axios.get(jwkURL);
     return await JWK.asKeyStore(jwkResponse.data.keys);
   } catch (error) {
@@ -33,11 +33,10 @@ export const getJwkFile = (type: JWKType): string => {
       return `jwk/public/${filename}`;
   }
 };
-export const getJwksUrl = (type: JWKType): string => {
+export const getJwksUrl = (
+  type: Exclude<JWKType, JWKType.ASYMMETRIC_PRIVATE>
+): string => {
   const baseUrl = process.env.BASE_URL as string;
-  if (type === JWKType.ASYMMETRIC_PRIVATE) {
-    throw new HttpException(403, "Forbidden");
-  }
   return `${baseUrl}/.well-known/${getJwkFilename(type)}`;
 };
 

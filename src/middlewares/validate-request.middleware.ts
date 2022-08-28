@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import Joi from "joi";
-import { HttpException } from "exceptions";
+import { HttpError } from "exceptions";
 
 export const validateRequest = (schema: Record<string, any>) => {
   return (req: Request, _res: Response, next: NextFunction): void => {
@@ -29,7 +29,7 @@ export const validateRequest = (schema: Record<string, any>) => {
       const errorMessage = error.details
         .map((details) => details.message)
         .join(", ");
-      return next(new HttpException(422, errorMessage));
+      return next(new HttpError(422, errorMessage));
     }
     return next();
   };

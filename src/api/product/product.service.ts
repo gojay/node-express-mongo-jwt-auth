@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
-import { HttpException } from "exceptions";
+import { HttpError } from "exceptions";
 import Product from "./product.model";
 import { IProductDoc, IProduct } from "./product.interface";
 
 export const createProduct = async (body: IProduct): Promise<IProductDoc> => {
   if (await Product.isSkuUnique(body.sku)) {
-    throw new HttpException(400, "Sku already exists");
+    throw new HttpError(400, "Sku already exists");
   }
   return Product.create(body);
 };
@@ -30,12 +30,12 @@ export const updateProductById = async (
 ): Promise<IProductDoc | null> => {
   const product = await getProductById(productId);
   if (!product) {
-    throw new HttpException(404, "Product not found");
+    throw new HttpError(404, "Product not found");
   }
   if (productBody.sku) {
     const isSkuUnique = await Product.isSkuUnique(productBody.sku);
     if (isSkuUnique) {
-      throw new HttpException(400, "Sku already exists");
+      throw new HttpError(400, "Sku already exists");
     }
   }
   Object.assign(product, productBody);
@@ -47,7 +47,7 @@ export const deleteProductById = async (
 ): Promise<IProductDoc | null> => {
   const product = await getProductById(productId);
   if (!product) {
-    throw new HttpException(404, "Product not found");
+    throw new HttpError(404, "Product not found");
   }
   return product.remove();
 };

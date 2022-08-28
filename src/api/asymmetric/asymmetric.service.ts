@@ -1,9 +1,9 @@
 import fs from "fs";
 import { JWK, JWS } from "node-jose";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { HttpException, UnauthorizeError } from "exceptions";
-import { getJwtExp, getJwkFile, getJwkContents } from "utils";
-import { JWKKeys, JWKType, JWT_TYPE } from "types";
+import { HttpError, UnauthorizeError } from "exceptions";
+import { getTokenExpUnix, getJwkFile, getJwkContents } from "utils";
+import { JWKKeys, JWKType, TokenType } from "types";
 
 const jwkPublicKey = getJwkFile(JWKType.ASYMMETRIC_PUBLIC);
 const jwkPrivateKey = getJwkFile(JWKType.ASYMMETRIC_PRIVATE);
@@ -65,30 +65,37 @@ export const remove = async (): Promise<void> => {
 };
 
 export const sign = async (
-  userId: number,
-  userRoles: string[]
+  type: TokenType,
+  payload: JwtPayload
 ): Promise<string> => {
   try {
     const ks = getJwkContents(JWKType.ASYMMETRIC_PRIVATE);
     if (!ks) {
-      throw new HttpException(400, "jwk_keys_not_exists");
+      throw new HttpError(400, "jwk_keys_not_exists");
     }
     const keyStore = await JWK.asKeyStore(ks);
 
-    const [key] = keyStore.all({ use: "sig" });
-    const opt = { compact: true, jwk: key, fields: { typ: "jwt" } };
-    const payload = JSON.stringify({
-      aud: process.env.JWT_AUDIENCE,
-      iss: process.env.JWT_ISSUER,
-      sub: userId,
-      roles: userRoles,
-      exp: getJwtExp(JWT_TYPE.ACCESS_TOKEN),
-    });
-    const signResult = await JWS.createSign(opt, key).update(payload).final();
-    return signResult.toString();
+    const [jwkKey] = keyStore.all({ use: "sig" });
+    return createToken(type, jwkKey, payload);
   } catch (error) {
-    throw new HttpException(400, (error as Error).message);
+    throw new HttpError(400, (error as Error).message);
   }
+};
+
+export const createToken = async (
+  type: TokenType,
+  jwkKey: JWK.Key,
+  payload: JwtPayload
+): Promise<string> => {
+  const opt = { compact: true, jwk: jwkKey, fields: { typ: "jwt" } };
+  const input = JSON.stringify({
+    ...payload,
+    aud: process.env.JWT_AUDIENCE,
+    iss: process.env.JWT_ISSUER,
+    exp: getTokenExpUnix(type),
+  });
+  const signResult = await JWS.createSign(opt, jwkKey).update(input).final();
+  return signResult.toString();
 };
 
 export const verify = async (token: string): Promise<JwtPayload> => {

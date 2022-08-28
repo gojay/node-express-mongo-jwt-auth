@@ -1,5 +1,5 @@
 import express from "express";
-import { validateRequest } from "middlewares";
+import { authJwt, validateRequest } from "middlewares";
 import * as userController from "./user.controller";
 import * as userValidation from "./user.validation";
 
@@ -7,14 +7,31 @@ const router = express.Router();
 
 router
   .route("/")
-  .get(validateRequest(userValidation.getUsers), userController.getUsers)
-  .post(validateRequest(userValidation.createUser), userController.createUser);
+  .get(
+    authJwt(["read:users"]),
+    validateRequest(userValidation.getUsers),
+    userController.getUsers
+  )
+  .post(
+    authJwt(["create:users"]),
+    validateRequest(userValidation.createUser),
+    userController.createUser
+  );
 
 router
   .route("/:userId")
-  .get(validateRequest(userValidation.getUser), userController.getUser)
-  .patch(validateRequest(userValidation.updateUser), userController.updateUser)
+  .get(
+    authJwt(["update:users"]),
+    validateRequest(userValidation.getUser),
+    userController.getUser
+  )
+  .patch(
+    authJwt(["update:users"]),
+    validateRequest(userValidation.updateUser),
+    userController.updateUser
+  )
   .delete(
+    authJwt(["delete:users"]),
     validateRequest(userValidation.deleteUser),
     userController.deleteUser
   );
