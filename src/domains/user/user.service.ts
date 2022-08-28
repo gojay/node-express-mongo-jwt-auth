@@ -1,9 +1,12 @@
 import mongoose from "mongoose";
+
+import { seedResources } from "domains/resource/resource.service";
+import { seedRoles } from "domains/role/role.service";
+import Role from "domains/role/role.model";
+
 import { HttpError } from "exceptions";
+
 import User from "./user.model";
-import Role from "../../role/role.model";
-import { seedResources } from "../../resource/resource.service";
-import { seedRoles } from "../../role/role.service";
 import { IUserDoc, IUser } from "./user.interface";
 
 export const seedUsers = async (): Promise<IUserDoc[]> => {

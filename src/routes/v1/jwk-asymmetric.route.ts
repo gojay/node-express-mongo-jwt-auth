@@ -1,7 +1,12 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { TokenType } from "types";
 
-import { add, remove, sign, verify } from "./asymmetric.service";
+import {
+  add,
+  remove,
+  sign,
+  verify,
+} from "domains/jwk/asymmetric/asymmetric.service";
 
 const router = Router();
 

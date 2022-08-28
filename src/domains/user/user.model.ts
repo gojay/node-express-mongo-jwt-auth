@@ -3,7 +3,7 @@ import validator from "validator";
 import bcrypt from "bcryptjs";
 
 import { IUserDoc, IUserModel } from "./user.interface";
-import { IResourceDoc } from "resource/resource.interface";
+import { IResourceDoc } from "domains/resource/resource.interface";
 
 const userSchema = new mongoose.Schema<IUserDoc, IUserModel>(
   {

@@ -1,13 +1,14 @@
 import { JwtPayload } from "jsonwebtoken";
 
-import { sign as JwtAsymmetricSign } from "api/asymmetric/asymmetric.service";
-import { sign as JwtSymmetricSign } from "api/symmetric/symmetric.service";
-import { IUserDoc } from "api/user/user.interface";
-import User from "api/user/user.model";
-import { getUserByEmail } from "api/user/user.service";
+import { sign as JwtAsymmetricSign } from "domains/jwk/asymmetric/asymmetric.service";
+import { sign as JwtSymmetricSign } from "domains/jwk/symmetric/symmetric.service";
+import { IUserDoc } from "domains/user/user.interface";
+import User from "domains/user/user.model";
+import { getUserByEmail } from "domains/user/user.service";
+import RefreshToken from "domains/refreshtoken/refreshtoken.model";
+import { IResourceDoc } from "domains/resource/resource.interface";
+
 import { HttpError, RefreshTokenError } from "exceptions";
-import RefreshToken from "refresh-token/refresh-token.model";
-import { IResourceDoc } from "resource/resource.interface";
 import { TokenType } from "types";
 import { getTokenExpDate } from "utils";
 import { IUserToken } from "./auth.interface";

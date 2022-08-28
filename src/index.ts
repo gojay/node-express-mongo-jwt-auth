@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import app from "./app";
-import { seedUsers } from "api/user/user.service";
+import { seedUsers } from "domains/user/user.service";
 
 const APP_PORT = process.env.APP_PORT ?? 8080;
 const MONGODB_URI = process.env.MONGODB_URI as string;

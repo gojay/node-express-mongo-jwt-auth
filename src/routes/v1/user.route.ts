@@ -1,7 +1,7 @@
 import express from "express";
 import { authJwt, validateRequest } from "middlewares";
-import * as userController from "./user.controller";
-import * as userValidation from "./user.validation";
+import * as userController from "../../domains/user/user.controller";
+import * as userValidation from "../../domains/user/user.validation";
 
 const router = express.Router();
 

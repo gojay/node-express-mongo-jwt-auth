@@ -1,7 +1,12 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { TokenType } from "types";
 
-import { add, remove, sign, verify } from "./symmetric.service";
+import {
+  add,
+  remove,
+  sign,
+  verify,
+} from "domains/jwk/symmetric/symmetric.service";
 
 const router = Router();
 

@@ -1,8 +1,5 @@
 import mongoose from "mongoose";
-import {
-  IRefreshTokenDoc,
-  IRefreshTokenModel,
-} from "./refresh-token.interface";
+import { IRefreshTokenDoc, IRefreshTokenModel } from "./refreshtoken.interface";
 
 const RefreshTokenSchema = new mongoose.Schema(
   {
