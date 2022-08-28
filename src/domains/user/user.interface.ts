@@ -1,5 +1,5 @@
+import { IResourceDoc } from "domains/resource/resource.interface";
 import { Document, Model, Schema } from "mongoose";
-import { IResourceDoc } from "resource/resource.interface";
 
 export interface IUser {
   name: string;
