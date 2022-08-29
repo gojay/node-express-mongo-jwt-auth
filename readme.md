@@ -1,20 +1,34 @@
-### Todo
+### Run
 
-1. install mongoose [DONE]
-2. create refresh_token schema [DONE]
-3. create refresh_token on sign then save into refresh_token schema [DONE]
-4. create refresh token service [DONE]
+**Config .env file**
 
-- check valid refresh_token
-- check exp refresh_token
-  - if not expired
-    - create new access_token & new refresh_token
-    - delete old refresh_token, save new refresh_token
-  - else
-    - throw 401: resign
+```
+NODE_ENV=development
+APP_PORT=3000
 
-5. create user schema [DONE]
-6. create api crud user [DONE]
-7. create api crud product [DONE]
-8. add middleware auth jwt [DONE]
-9. add middleware auth jwt roles [TODO]
+MONGODB_URI=mongodb://127.0.0.1:27017/example
+
+JWKS_BASE_URL=http://localhost:3000
+JWT_AUDIENCE=http://localhost:3000
+JWT_ISSUER="Localhost"
+JWT_ACCESS_TOKEN_EXPIRATION=120
+JWT_REFRESH_TOKEN_EXPIRATION=600
+# default JWK is asymmetric
+# JWK_TYPE=symmetric
+```
+
+**Run local**
+
+```
+yarn dev
+```
+
+**Open Swagger**
+
+```
+http://localhost:3000/v1/docs
+```
+
+### Step
+
+For step by step will be explained in the screenshot images
