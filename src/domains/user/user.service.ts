@@ -1,70 +1,11 @@
 import mongoose from "mongoose";
 
-import { seedResources } from "domains/resource/resource.service";
-import { seedRoles } from "domains/role/role.service";
-import Role from "domains/role/role.model";
-
 import { HttpError } from "exceptions";
 
 import User from "./user.model";
 import { IUserDoc, IUser } from "./user.interface";
 
-export const seedUsers = async (): Promise<IUserDoc[]> => {
-  await seedResources();
-  await seedRoles();
-  await User.deleteMany();
-
-  const [superAdminRole, adminRole, staffRole] = await Promise.all([
-    Role.findOne({ name: "Super Admin" }),
-    Role.findOne({ name: "Admin" }),
-    Role.findOne({ name: "Staff" }),
-  ]);
-
-  const newUsers = await User.create([
-    {
-      name: "John Doe",
-      email: "john.doe@example.com",
-      password: "12345678",
-      role: superAdminRole,
-    },
-    {
-      name: "Jane doe",
-      email: "jane.doe@example.com",
-      password: "12345678",
-      role: adminRole,
-    },
-    {
-      name: "Richard Roe",
-      email: "richard.roe@example.com",
-      password: "12345678",
-      role: staffRole,
-    },
-  ]);
-
-  const users = await User.find().populate({
-    path: "role",
-    model: "Role",
-    select: "-_id name resources",
-    populate: {
-      path: "resources",
-      model: "Resource",
-      select: "-_id scopes",
-    },
-  });
-
-  return users;
-};
-
 export const createUser = async (userBody: IUser): Promise<IUserDoc> => {
-  if (await User.IsEmailTaken(userBody.email)) {
-    throw new HttpError(400, "Email already taken");
-  }
-  return User.create(userBody);
-};
-
-export const registerUser = async (
-  userBody: Omit<IUser, "role">
-): Promise<IUserDoc> => {
   if (await User.IsEmailTaken(userBody.email)) {
     throw new HttpError(400, "Email already taken");
   }
@@ -76,7 +17,16 @@ export const getUsers = async (fields?: string): Promise<IUserDoc[]> => {
   if (fields) {
     users.select(fields);
   }
-  return users.exec();
+  return users.populate({
+    path: "role",
+    model: "Role",
+    select: "_id name resources",
+    populate: {
+      path: "resources",
+      model: "Resource",
+      select: "-_id scopes",
+    },
+  });
 };
 
 export const getUserById = async (

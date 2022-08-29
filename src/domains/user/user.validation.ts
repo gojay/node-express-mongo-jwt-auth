@@ -1,14 +1,11 @@
 import Joi from "joi";
 import { objectId, password } from "validations";
-import { UserRole } from "./user.type";
 
 const createUserBody = {
   email: Joi.string().required().email(),
   password: Joi.string().required(),
   name: Joi.string().required(),
-  role: Joi.string()
-    .required()
-    .valid(...Object.values(UserRole)),
+  role: Joi.string().required().custom(objectId),
 };
 
 export const createUser = {

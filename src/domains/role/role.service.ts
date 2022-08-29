@@ -5,7 +5,7 @@ import { IRoleDoc } from "./role.interface";
 export const seedRoles = async (): Promise<IRoleDoc[]> => {
   await Role.deleteMany();
 
-  const [superAdminResources, adminResources, staffResources] =
+  const [superAdminResources, adminResources, userResources] =
     await Promise.all([
       Resource.find({
         name: {
@@ -34,10 +34,18 @@ export const seedRoles = async (): Promise<IRoleDoc[]> => {
       resources: adminResources,
     },
     {
-      name: "Staff",
-      resources: staffResources,
+      name: "User",
+      resources: userResources,
     },
   ]);
 
   return roles;
+};
+
+export const getRoles = async (fields?: string): Promise<IRoleDoc[]> => {
+  const roles = Role.find().populate("resources");
+  if (fields) {
+    roles.select(fields);
+  }
+  return roles.exec();
 };

@@ -1,3 +1,9 @@
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: Manage users
+ */
 import express from "express";
 import { authJwt, validateRequest } from "middlewares";
 import * as userController from "../../domains/user/user.controller";
@@ -5,52 +11,12 @@ import * as userValidation from "../../domains/user/user.validation";
 
 const router = express.Router();
 
-router
-  .route("/")
-  .get(
-    authJwt(["read:users"]),
-    validateRequest(userValidation.getUsers),
-    userController.getUsers
-  )
-  .post(
-    authJwt(["create:users"]),
-    validateRequest(userValidation.createUser),
-    userController.createUser
-  );
-
-router
-  .route("/:userId")
-  .get(
-    authJwt(["update:users"]),
-    validateRequest(userValidation.getUser),
-    userController.getUser
-  )
-  .patch(
-    authJwt(["update:users"]),
-    validateRequest(userValidation.updateUser),
-    userController.updateUser
-  )
-  .delete(
-    authJwt(["delete:users"]),
-    validateRequest(userValidation.deleteUser),
-    userController.deleteUser
-  );
-
-export default router;
-
-/**
- * @swagger
- * tags:
- *   name: Users
- *   description: User management and retrieval
- */
-
 /**
  * @swagger
  * /users:
  *   post:
  *     summary: Create a user
- *     description: Only admins can create other users.
+ *     description: Only users with scope "update:users" can create other users.
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -81,10 +47,11 @@ export default router;
  *                  type: string
  *                  enum: [user, admin]
  *             example:
- *               name: fake name
- *               email: fake@example.com
+ *               name: John Doe
+ *               email: john.doe@example.com
  *               password: password1
- *               role: user
+ *               role: 630b99c9c860f3bdd8c4d875
+ *
  *     responses:
  *       "201":
  *         description: Created
@@ -101,81 +68,42 @@ export default router;
  *
  *   get:
  *     summary: Get all users
- *     description: Only admins can retrieve all users.
+ *     description: Only users with scope "read:users"  can retrieve all users.
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: query
- *         name: name
- *         schema:
- *           type: string
- *         description: User name
- *       - in: query
- *         name: role
- *         schema:
- *           type: string
- *         description: User role
- *       - in: query
- *         name: sortBy
- *         schema:
- *           type: string
- *         description: sort by query in the form of field:desc/asc (ex. name:asc)
- *       - in: query
- *         name: projectBy
- *         schema:
- *           type: string
- *         description: project by query in the form of field:hide/include (ex. name:hide)
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *           minimum: 1
- *         default: 10
- *         description: Maximum number of users
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *           minimum: 1
- *           default: 1
- *         description: Page number
  *     responses:
  *       "200":
  *         description: OK
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 results:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/User'
- *                 page:
- *                   type: integer
- *                   example: 1
- *                 limit:
- *                   type: integer
- *                   example: 10
- *                 totalPages:
- *                   type: integer
- *                   example: 1
- *                 totalResults:
- *                   type: integer
- *                   example: 1
+ *              type: array
+ *              items:
+ *                $ref: '#/components/schemas/UserWithRole'
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
  *         $ref: '#/components/responses/Forbidden'
  */
-
+router
+  .route("/")
+  .get(
+    authJwt(["read:users"]),
+    validateRequest(userValidation.getUsers),
+    userController.getUsers
+  )
+  .post(
+    authJwt(["create:users"]),
+    validateRequest(userValidation.createUser),
+    userController.createUser
+  );
 /**
  * @swagger
  * /users/{id}:
  *   get:
  *     summary: Get a user
- *     description: Logged in users can fetch only their own user information. Only admins can fetch other users.
+ *     description: Only users with scope "read:users", can fetch other users.
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -202,7 +130,7 @@ export default router;
  *
  *   patch:
  *     summary: Update a user
- *     description: Logged in users can only update their own information. Only admins can update other users.
+ *     description: Only users with scope "update:users", can update other users.
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -232,8 +160,8 @@ export default router;
  *                 minLength: 8
  *                 description: At least one number and one letter
  *             example:
- *               name: fake name
- *               email: fake@example.com
+ *               name: John Doe
+ *               email: john.doe@example.com
  *               password: password1
  *     responses:
  *       "200":
@@ -253,7 +181,7 @@ export default router;
  *
  *   delete:
  *     summary: Delete a user
- *     description: Logged in users can delete only themselves. Only admins can delete other users.
+ *     description: Only users with scope "delete:users" can delete other users.
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -274,3 +202,22 @@ export default router;
  *       "404":
  *         $ref: '#/components/responses/NotFound'
  */
+router
+  .route("/:userId")
+  .get(
+    authJwt(["read:users"]),
+    validateRequest(userValidation.getUser),
+    userController.getUser
+  )
+  .patch(
+    authJwt(["update:users"]),
+    validateRequest(userValidation.updateUser),
+    userController.updateUser
+  )
+  .delete(
+    authJwt(["delete:users"]),
+    validateRequest(userValidation.deleteUser),
+    userController.deleteUser
+  );
+
+export default router;

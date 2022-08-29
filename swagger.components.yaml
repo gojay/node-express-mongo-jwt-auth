@@ -1,0 +1,151 @@
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        role:
+          type: string
+      example:
+        id: 5ebac534954b54139806c112
+        email: john.doe@example.com
+        name: John Doe
+        role: 5ebac534954b54139806c112
+    UserWithRole:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        role:
+          $ref: "#/components/schemas/Role"
+
+      example:
+        id: 5ebac534954b54139806c112
+        email: john.doe@example.com
+        name: John Doe
+        role:
+          _id: 630b99c9c860f3bdd8c4d875
+          name: Super Admin
+          resources:
+            - scopes:
+                - create:products
+                - read:products
+                - update:products
+                - delete:products
+
+    Role:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        resources:
+          $ref: "#/components/schemas/Resource"
+
+    Resource:
+      type: object
+      properties:
+        scopes:
+          type: array
+          items:
+            type: string
+      example:
+        - scopes:
+            - create:products
+            - read:products
+            - update:products
+            - delete:products
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        sku:
+          type: string
+        price:
+          type: number
+      example:
+        id: 5ebac534954b54139806c112
+        name: Product 0001
+        sku: sku0001
+        price: 500000
+
+    AuthToken:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+      example:
+        access_token: eyJhbGciOiJIUzI1NiIsImtpZCI6InN5bTEifQ.eyJzdWIiOiI2MzBiOTljOWM4NjBmM2JkZDhjNGQ4N2YiLCJlbWFpbCI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwicm9sZSI6IlN1cGVyIEFkbWluIiwic2NvcGVzIjpbImNyZWF0ZTpwcm9kdWN0cyIsInJlYWQ6cHJvZHVjdHMiLCJ1cGRhdGU6cHJvZHVjdHMiLCJkZWxldGU6cHJvZHVjdHMiLCJjcmVhdGU6dXNlcnMiLCJyZWFkOnVzZXJzIiwidXBkYXRlOnVzZXJzIiwiZGVsZXRlOnVzZXJzIl0sImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCIsImlzcyI6IkxvY2FsaG9zdCIsImV4cCI6MTY2MTczNDU1N30.D-4RMht-liJa_BO4cn39yymI-xJojoDbuoPruCrxJOI
+        refresh_token: eyJhbGciOiJIUzI1NiIsImtpZCI6InN5bTEifQ.eyJzdWIiOiI2MzBiOTljOWM4NjBmM2JkZDhjNGQ4N2YiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJpc3MiOiJMb2NhbGhvc3QiLCJleHAiOjE2NjE3Mzk5NTd9.5GBtiYGVfabTIg89wtGdjhqsKXa82jkwdkIK7Qa-zF4
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+
+  responses:
+    DuplicateEmail:
+      description: Email already taken
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            message: Email already taken
+    DuplicateSku:
+      description: Sku already exists
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            message: Sku already exists
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            message: No authorization token was found
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            message: Forbidden
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            message: Not found
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

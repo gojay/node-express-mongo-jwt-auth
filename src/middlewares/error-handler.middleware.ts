@@ -13,6 +13,7 @@ export const ErrorHandlerMiddleware = (
         .status((error as HttpError).status)
         .json({ message: error.message });
     case "UnauthorizedError":
+    case "RefreshTokenError":
       return res.status(401).json({ message: error.message });
     default:
       return res.status(500).json({ message: error.message });
