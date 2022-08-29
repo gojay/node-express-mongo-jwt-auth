@@ -29,7 +29,11 @@ export const add = async (kid: string): Promise<JWKKeys> => {
 };
 
 export const remove = async (kid: string): Promise<void> => {
-  const keyStore = await fetchJwks(JWKType.SYMMETRIC);
+  const ks = getJwkContents(JWKType.SYMMETRIC);
+  if (!ks) {
+    throw new HttpError(404, "jwk keys does not exists");
+  }
+  const keyStore = await JWK.asKeyStore(ks);
   if (!keyStore) {
     throw new HttpError(404, "jwk keys does not exists");
   }
@@ -52,10 +56,11 @@ export const sign = async (
   payload: JwtPayload,
   kid?: string
 ): Promise<string> => {
-  const keyStore = await fetchJwks(JWKType.SYMMETRIC);
-  if (!keyStore) {
-    throw new UnauthorizeError("jwk keys doesn't exists");
+  const ks = getJwkContents(JWKType.SYMMETRIC);
+  if (!ks) {
+    throw new HttpError(400, "jwk_keys_not_exists");
   }
+  const keyStore = await JWK.asKeyStore(ks);
 
   let jwkKey;
   if (kid) {

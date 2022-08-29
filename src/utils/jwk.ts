@@ -36,8 +36,8 @@ export const getJwkFile = (type: JWKType): string => {
 export const getJwksUrl = (
   type: Exclude<JWKType, JWKType.ASYMMETRIC_PRIVATE>
 ): string => {
-  const baseUrl = process.env.BASE_URL as string;
-  return `${baseUrl}/.well-known/${getJwkFilename(type)}`;
+  const jwksBaseUrl = process.env.JWKS_BASE_URL as string;
+  return `${jwksBaseUrl}/.well-known/${getJwkFilename(type)}`;
 };
 
 export const getJwkFilename = (type: JWKType): string => {

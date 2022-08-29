@@ -120,7 +120,7 @@ export const verify = async (token: string): Promise<JwtPayload> => {
     throw new UnauthorizeError("missing_kid");
   }
 
-  const ks = getJwkContents(JWKType.ASYMMETRIC_PRIVATE);
+  const ks = getJwkContents(JWKType.ASYMMETRIC_PUBLIC);
   if (!ks) {
     throw new UnauthorizeError("jwk_keys_not_exists");
   }
