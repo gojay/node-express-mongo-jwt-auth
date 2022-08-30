@@ -1,8 +1,6 @@
-### Run
+# Config
 
-**Config .env file**
-
-copy .env.template, then rename it to .env
+copy **.env.template**, then rename it to **.env**
 
 ```
 NODE_ENV=development
@@ -19,24 +17,26 @@ JWT_REFRESH_TOKEN_EXPIRATION=600
 # JWK_TYPE=symmetric
 ```
 
-**Run local**
+# How to Run
+
+**local**
 
 ```
 yarn dev
 ```
 
-**Run docker local**
+**Docker local**
 
 ```
 yarn docker:dev
 ```
 
-**Open Swagger**
+# API Documentation
 
 ```
 http://localhost:3000/v1/docs
 ```
 
-### Step
+# Walkthrough
 
 For step by step will be explained in the screenshot images
