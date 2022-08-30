@@ -1,0 +1,6 @@
+version: '3'
+
+services:
+  nodeapp:
+    container_name: nodeapp-dev
+    command: yarn dev -L

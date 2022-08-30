@@ -6,7 +6,7 @@ const swaggerDefinition = {
     description: "Express monggose crud with JWT authentication in typescript",
     license: {
       name: "MIT",
-      url: "https://github.com/saisilinus/node-express-mongoose-typescript-boilerplate.git",
+      url: "https://gojay@bitbucket.org/gojay/node-express-mongo-jwt-auth.git",
     },
   },
   servers: [

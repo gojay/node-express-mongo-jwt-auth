@@ -2,11 +2,13 @@
 
 **Config .env file**
 
+copy .env.template, then rename it to .env
+
 ```
 NODE_ENV=development
 APP_PORT=3000
 
-MONGODB_URI=mongodb://127.0.0.1:27017/example
+MONGODB_URI=mongodb://127.0.0.1:27017/sample_db
 
 JWKS_BASE_URL=http://localhost:3000
 JWT_AUDIENCE=http://localhost:3000
@@ -21,6 +23,12 @@ JWT_REFRESH_TOKEN_EXPIRATION=600
 
 ```
 yarn dev
+```
+
+**Run docker local**
+
+```
+yarn docker:dev
 ```
 
 **Open Swagger**

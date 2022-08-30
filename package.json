@@ -10,6 +10,7 @@
     "compile:watch": "tsc --build --watch",
     "pre:dev": "cross-env NODE_ENV=development NODE_PATH=./src nodemon -e ts,js --exec ts-node -r ./src/index.ts",
     "dev": "concurrently --kill-others \"yarn compile:watch\" \"yarn pre:dev\"",
+    "docker:dev": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up",
     "lint": "npx eslint ./src",
     "build": "npx tsc"
   },

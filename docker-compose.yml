@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  nodeapp:
+    build: .
+    image: nodeapp
+    env_file: .env
+    environment:
+      MONGODB_URI: mongodb://sample_user:12345678@mongo:27017/sample_db
+    ports:
+      - '3000:3000'
+    depends_on:
+      - mongo
+    volumes:
+      - .:/usr/dist/nodeapp
+    networks:
+      - nodeapp-network
+
+  mongo:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_DATABASE: admin
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    ports:
+      - '27017:27017'
+    volumes:
+      - ./docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - mongodbdata:/data/db
+    networks:
+      - nodeapp-network
+
+volumes:
+  mongodbdata:
+
+networks:
+  nodeapp-network:
+    driver: bridge
